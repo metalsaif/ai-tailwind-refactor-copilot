@@ -15,7 +15,7 @@ export function InputArea({ value, onChange }: InputAreaProps) {
         name="input-code"
         // MODIFIED: Removed "rows" and added "flex-grow" to fill vertical space
         // Also changed background to white for better contrast
-        className="flex-grow w-full p-4 font-mono text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md shadow-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none text-slate-800 dark:text-slate-300 transition-colors resize-none"
+        className="flex-grow w-full p-4 font-mono text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none text-slate-800 dark:text-slate-300 transition-colors resize-none"
         placeholder="Paste your code here..."
         value={value}
         onChange={(e) => onChange(e.target.value)}

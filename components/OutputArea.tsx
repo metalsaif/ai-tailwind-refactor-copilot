@@ -39,7 +39,7 @@ export function OutputArea({ value }: OutputAreaProps) {
          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
             Generated Tailwind Code
          </label>
-         <div className="flex-grow rounded-md border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 animate-pulse" />
+         <div className="flex-grow overflow-auto rounded-md border border-slate-300 dark:border-slate-700 text-sm [&>pre]:!h-full [&>pre]:!p-4 [&>pre]:!bg-transparent [&>pre]:!font-mono" />
       </div>
     );
   }
