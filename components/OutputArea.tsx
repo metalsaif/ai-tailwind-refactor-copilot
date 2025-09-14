@@ -1,9 +1,9 @@
 // components/OutputArea.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
-import { codeToHtml } from 'shiki';
+import { useState, useEffect, useRef } from "react";
+import { DarkModeHighlighter } from './DarkModeHighlighter';
+import { LightModeHighlighter } from './LightModeHighlighter';
 
 interface OutputAreaProps {
   value: string;
@@ -11,38 +11,23 @@ interface OutputAreaProps {
 
 export function OutputArea({ value }: OutputAreaProps) {
   const [isCopied, setIsCopied] = useState(false);
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [highlightedHtml, setHighlightedHtml] = useState("");
+  const codeRef = useRef<HTMLDivElement>(null);
+  const codeToDisplay = value || "Your clean code will appear here...";
 
-  useEffect(() => setMounted(true), []);
+  const handleCopy = () => {
+    if (codeRef.current) {
+      const text = codeRef.current.innerText;
+      navigator.clipboard.writeText(text);
+      setIsCopied(true);
+    }
+  };
 
   useEffect(() => {
-    async function highlight() {
-      if (mounted) {
-        const html = await codeToHtml(value || "Your clean code will appear here...", {
-          lang: 'html',
-          theme: theme === 'dark' ? 'github-dark' : 'github-light',
-        });
-        setHighlightedHtml(html);
-      }
+    if (isCopied) {
+      const timer = setTimeout(() => setIsCopied(false), 2000);
+      return () => clearTimeout(timer);
     }
-    highlight();
-  }, [value, theme, mounted]);
-
-  const handleCopy = () => { /* ... */ };
-  useEffect(() => { /* ... */ }, [isCopied]);
-
-  if (!mounted || !highlightedHtml) {
-    return (
-      <div className="relative flex flex-col h-full">
-         <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
-            Generated Tailwind Code
-         </label>
-         <div className="flex-grow overflow-auto rounded-md border border-slate-300 dark:border-slate-700 text-sm [&>pre]:!h-full [&>pre]:!p-4 [&>pre]:!bg-transparent [&>pre]:!font-mono" />
-      </div>
-    );
-  }
+  }, [isCopied]);
 
   return (
     <div className="relative flex flex-col h-full">
@@ -50,9 +35,19 @@ export function OutputArea({ value }: OutputAreaProps) {
         Generated Tailwind Code
       </label>
       <div 
-        className="flex-grow overflow-auto rounded-md border border-slate-300 dark:border-slate-700 text-sm [&>pre]:!h-full [&>pre]:!p-4 [&>pre]:!bg-transparent"
-        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-      />
+        ref={codeRef}
+        className="flex-grow overflow-auto rounded-md border border-slate-300 dark:border-slate-700 text-sm"
+      >
+        {/* The light mode version is hidden when in dark mode */}
+        <div className="dark:hidden h-full">
+          <LightModeHighlighter code={codeToDisplay} />
+        </div>
+        {/* The dark mode version is hidden by default, and shown only in dark mode */}
+        <div className="hidden dark:block h-full">
+          <DarkModeHighlighter code={codeToDisplay} />
+        </div>
+      </div>
+
       {value && (
         <button
           onClick={handleCopy}
